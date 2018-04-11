@@ -28,7 +28,7 @@ const zlib = require('zlib');
 let remainingCount = 0;
 
 const moment = require('moment');
-let dateString = moment().format('DDMMYYYY');
+let dateString = moment().format('MMDDYYYY');
 
 fs.readdir(dirName, (err, files) => {
 
