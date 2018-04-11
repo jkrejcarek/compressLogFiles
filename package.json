@@ -1,14 +1,13 @@
 {
-  "name": "sample9-watch",
+  "name": "CompressLogFiles",
   "version": "1.0.0",
-  "description": "",
+  "description": "Compress Domino HTTP log files. Skips today files (files ending with current day in filename like access04112018.log",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+  "scripts": {    
     "start": "node index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Jan Krejcarek",
   "license": "ISC",
   "dependencies": {
     "moment": "^2.22.0",
