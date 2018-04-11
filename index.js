@@ -4,10 +4,11 @@ let winston = require('winston');
 
 var logger = new (winston.Logger)({
     transports: [
-      new (winston.transports.Console)({'timestamp':true})
+      new (winston.transports.Console)({'level':'verbose'}),
+      new (winston.transports.File)({'level':'verbose', 'filename':'compress.log', 'maxsize':1024 * 1024, 'zippedArchive':true, 'json':false})
     ]
 });
-logger.level = 'verbose';
+
 logger.cli();
 
 const dirName = process.argv[2];
@@ -26,6 +27,9 @@ if (!dirStat.isDirectory()) {
 const zlib = require('zlib');
 let remainingCount = 0;
 
+const moment = require('moment');
+let dateString = moment().format('DDMMYYYY');
+
 fs.readdir(dirName, (err, files) => {
 
     if (err) {        
@@ -37,6 +41,8 @@ fs.readdir(dirName, (err, files) => {
 
         let stat = fs.statSync(fullpath);
         if (stat.isFile() && path.extname(fullpath) == '.log') {
+          let baseFileName = path.basename(fullpath, '.log');
+          if (!baseFileName.endsWith(dateString)) {
             logger.info("compressing " + fullpath);
                         
             try {
@@ -62,6 +68,9 @@ fs.readdir(dirName, (err, files) => {
             } catch (err) {
                 logger.error("Error compressing and removing a fullpath: " + err);
             }
+          } else {
+            logger.info('Skipping today file ' + fullpath);
+          }
         }
     }
 });
