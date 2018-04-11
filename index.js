@@ -1,7 +1,14 @@
 'use strict';
 
 let winston = require('winston');
-winston.cli();
+
+var logger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)({'timestamp':true})
+    ]
+});
+logger.level = 'verbose';
+logger.cli();
 
 const dirName = process.argv[2];
 if (!dirName) {
@@ -17,11 +24,12 @@ if (!dirStat.isDirectory()) {
 }
 
 const zlib = require('zlib');
+let remainingCount = 0;
 
 fs.readdir(dirName, (err, files) => {
 
     if (err) {        
-        winston.error(err);
+      logger.error(err);
     }
 
     for (let file of files) { 
@@ -29,7 +37,7 @@ fs.readdir(dirName, (err, files) => {
 
         let stat = fs.statSync(fullpath);
         if (stat.isFile() && path.extname(fullpath) == '.log') {
-            winston.info("compressing " + fullpath);
+            logger.info("compressing " + fullpath);
                         
             try {
                 const gzip = zlib.createGzip();
@@ -37,14 +45,22 @@ fs.readdir(dirName, (err, files) => {
                 const writer = fs.createWriteStream(fullpath + ".gz");
 
                 writer.on('close', () => {
-                    winston.verbose("GZip file closed, deleting original " + fullpath);
+                    logger.verbose("GZip file closed, deleting original " + fullpath);
                     fs.unlinkSync(fullpath);
+                    remainingCount--;
+
+                    if (remainingCount == 0) {
+                      logger.info("Done zipping all files");
+                    } else {
+                      logger.verbose("Remains: " + remainingCount);
+                    }
                 });
 
+                remainingCount++;
                 reader.pipe(gzip).pipe(writer);
-            
+
             } catch (err) {
-                winston.error("Error compressing and removing a fullpath: " + err);
+                logger.error("Error compressing and removing a fullpath: " + err);
             }
         }
     }
