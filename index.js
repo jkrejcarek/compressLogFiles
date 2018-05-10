@@ -34,6 +34,7 @@ fs.readdir(dirName, (err, files) => {
 
   if (err) {
     logger.error(err);
+    return;
   }
 
   for (let file of files) {
