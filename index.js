@@ -18,10 +18,10 @@ if (!dirName) {
 }
 
 try {
-let dirStat = fs.statSync(dirName);
-if (!dirStat.isDirectory()) {
-  throw Error(dirName + " must be a directory");
-}
+  let dirStat = fs.statSync(dirName);
+  if (!dirStat.isDirectory()) {
+    throw Error(dirName + " must be a directory");
+  }
 } catch (err) {
   logger.error("Error reading " + dirName);
   return;
@@ -36,6 +36,6 @@ fs.readdir(dirName, (err, files) => {
       packer.pack(dirName, file);
     }
   } else {
-    logger.error(err);  
+    logger.error(err);
   }
 });
